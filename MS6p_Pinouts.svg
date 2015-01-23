@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="MS6p_Pinouts.pdf">
+   sodipodi:docname="MS6p_Pinouts.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.85365854"
-     inkscape:cx="371.42728"
-     inkscape:cy="776.15739"
+     inkscape:zoom="1.2072555"
+     inkscape:cx="320.28178"
+     inkscape:cy="767.19006"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -717,18 +717,24 @@
          y="377.10504">LD12</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Roboto;-inkscape-font-specification:Roboto"
-       x="186.79999"
-       y="366.93359"
+       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:97%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Roboto;-inkscape-font-specification:Roboto"
+       x="198.22141"
+       y="380.8443"
        id="text3475"
-       sodipodi:linespacing="125%"
+       sodipodi:linespacing="97%"
        inkscape:export-filename="/home/james/devroot/learnfpga/diagram.png"
        inkscape:export-xdpi="154.3"
        inkscape:export-ydpi="154.3"><tspan
          sodipodi:role="line"
          id="tspan3477"
-         x="186.79999"
-         y="366.93359">128S102</tspan></text>
+         x="198.22141"
+         y="380.8443"
+         style="fill:#ffffff;fill-opacity:1;line-height:97%">128S</tspan><tspan
+         sodipodi:role="line"
+         x="198.22141"
+         y="395.8443"
+         id="tspan6444"
+         style="fill:#ffffff;fill-opacity:1;line-height:97%">102</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Roboto;-inkscape-font-specification:Roboto"
@@ -1366,7 +1372,7 @@
        id="rect3906-4"
        width="148.56511"
        height="35.320328"
-       x="131.85617"
+       x="131.56331"
        y="74.130592"
        inkscape:export-filename="/home/james/devroot/learnfpga/diagram.png"
        inkscape:export-xdpi="154.3"
@@ -1858,7 +1864,7 @@
        id="rect3906-4-4"
        width="148.56511"
        height="35.320328"
-       x="432.36029"
+       x="432.65314"
        y="74.130577"
        inkscape:export-filename="/home/james/devroot/learnfpga/diagram.png"
        inkscape:export-xdpi="154.3"
@@ -2266,12 +2272,12 @@
        inkscape:export-xdpi="154.3"
        inkscape:export-ydpi="154.3" />
     <rect
-       style="fill:none;stroke:#000000;stroke-width:1.59053981;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="fill:none;stroke:#000000;stroke-width:1.58686399;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect3906-4-6-9"
-       width="55.186535"
-       height="35.509609"
-       x="227.21022"
-       y="412.6698"
+       width="55.08667"
+       height="35.409744"
+       x="227.20839"
+       y="412.77148"
        inkscape:export-filename="/home/james/devroot/learnfpga/diagram.png"
        inkscape:export-xdpi="154.3"
        inkscape:export-ydpi="154.3" />
