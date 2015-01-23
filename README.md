@@ -1,6 +1,6 @@
-# FPGA
-Files related to the miniSpartan6+ FPGA board from Scarab Hardware
-See also:
-  http://www.scarabhardware.com/
-  https://github.com/scarabhardware/miniSpartan6-plus
+<h2>Useful with the miniSpartan6+ from Scarab Hardware</h2>
+See also:<br>
+
+  http://www.scarabhardware.com/ <br>
+  https://github.com/scarabhardware/miniSpartan6-plus <br>
   https://github.com/jamesots/learnfpga
