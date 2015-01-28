@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer: John Beale
 // 
 // Create Date:    22:39:56 01/26/2015 
 // Design Name: 
@@ -24,22 +24,37 @@
 // toolbox.xilinx.com/docsan/xilinx4/data/docs/xst/hdlcode8.html
 
 module parshift (
-  input  clk,
-  input load,
-  input [WIDTH:0] din,
-  output sout );
+  input  clk,      // shift register clock, data update on rising edge
+  input load,      // logic high loads data; low starts shifting out
+  input [MSB:0] din,  // bus with data to shift out
+  output sout, // the serial output
+  output done  // done-shifting flag goes high at start of final bit (b0)
+  );
 
-parameter WIDTH = 30;  // MSB of the shift reg (WIDTH+1 bits total)
+parameter WIDTH = 32;  // MSB of the shift reg (WIDTH+1 bits total)
+localparam MSB = WIDTH-1;  // bit numbering from 0 to MSB
 
-reg [WIDTH:0] tmp; 
+reg [MSB:0] sreg;    // shift register data
+reg [7:0] bitcount;  // so max WIDTH = 254, but that should be enough...
+reg dflag;           // stores DONE flag output
  
 always @(posedge clk) 
   begin 
     if (load) 
-      tmp = din; 
+	  begin
+	   dflag = 1'd0;      // reset DONE flag to 0 (false)
+	   bitcount = 7'd0;  // set bit counter at b0
+      sreg = din;   // b0 is output immediately upon (load & posedge clk)
+	  end
     else 
-      tmp = {tmp[(WIDTH-1):0], 1'b0}; // shift left and 0-fill on right
+	  begin
+      sreg = {sreg[(MSB-1):0], 1'b0}; // shift left and 0-fill on right
+		bitcount = bitcount+1;  // this is the number of current bit output
+      if (bitcount == MSB) 
+		  dflag = 1'd1;  // set DONE flag to 1 (true)
+	  end
   end 
 
-assign sout = tmp[WIDTH]; 
+assign sout = sreg[MSB];    // shift register data output
+assign done = dflag;        // shift register DONE flag output
 endmodule 

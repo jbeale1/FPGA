@@ -19,20 +19,27 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module counter1
-#( parameter WIDTH = 30 )
     ( input clk, 
+	   input reset,
 	   input ena1, 
 	   output wire [WIDTH:0] out );
+		
+parameter WIDTH = 30;  // total bits in the counter
+localparam MSB = WIDTH-1;  // bit numbering from 0 to MSB	 
 	 
-reg [WIDTH-1:0] cnt;
+reg [MSB:0] cnt;
 reg clkreg;  // save the value of the clock signal as the LSB of counter
 
 always @(posedge clk) 
   begin
-    if (ena1) begin
-      cnt <= cnt+1;    
-		clkreg <= clk; // clock signal itself is LSB of counter
-    end
+    if (reset)
+	   cnt <= 0;   // reset counter to zero
+    else 
+	   if (ena1)  
+	    begin
+        cnt <= cnt+1;    
+		  clkreg <= clk; // clock signal itself is LSB of counter
+       end
   end
   
 // assign out = cnt[WIDTH -:7];   // show output of counter on 7 LEDs

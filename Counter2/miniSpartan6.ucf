@@ -1,7 +1,7 @@
-# Constraints for counter2 project on miniSpartan6+ board
+#Created by Constraints Editor (xc6slx25-ftg256-3) - 2015/01/02
 NET "clk50" PERIOD = 20 ns | LOC = "K3"; # IO_L42P_GCLK25_TRDY2_M3UDM
 #NET "clk32" PERIOD = 31.25 ns | LOC = "J4"; # IO_L42N_GCLK24_M3LDM_3
-
+# PIN "clkout1_buf.O" CLOCK_DEDICATED_ROUTE = FALSE;
 NET "LEDS<0>" LOC="P11";
 NET "LEDS<1>" LOC="N9";
 NET "LEDS<2>" LOC="M9";
@@ -10,12 +10,17 @@ NET "LEDS<4>" LOC="T8";
 NET "LEDS<5>" LOC="N8";
 NET "LEDS<6>" LOC="P8";
 NET "LEDS<7>" LOC="P7";
-
-NET "ena1" LOC="E7";    // PORTA0
-NET "insig1" LOC="C8";  // PORTA1
-net "outsig2" LOC="D8"; // PORTA2
-net "clktap" LOC="D14"; // PORTB1
-net "serout" LOC="E12"; // PORTB3
-
-# NET "PORTF10" LOC="H2";
 # miniSp6+ PORTA0 = E7
+NET "ena1" LOC="E7";
+NET "insig1" LOC="C8"; // PORTA1
+net "outsig2" LOC="D8"; // PORTA2
+
+# DIP Switches
+NET "SW<1>"   LOC="L1" | IOSTANDARD=LVTTL | PULLUP; // DIP SWITCH #1
+NET "SW<2>"   LOC="L3" | IOSTANDARD=LVTTL | PULLUP; // DIP SWITCH #2
+NET "SW<3>"   LOC="L4" | IOSTANDARD=LVTTL | PULLUP;
+NET "SW<4>"   LOC="L5" | IOSTANDARD=LVTTL | PULLUP;
+
+net "clktap" LOC="D14"; // miniSpartan6+ PORTB1
+net "serout" LOC="E12"; // PORTB3
+// NET "PORTF10" LOC="H2";
