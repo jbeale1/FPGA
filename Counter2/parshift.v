@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: John Beale
 // 
-// Create Date:    22:39:56 01/26/2015 
+// Create Date:    1:28 pm 30-JAN-2015
 // Design Name: 
 // Module Name:    parshift 
 // Project Name: 
@@ -38,6 +38,8 @@ reg [MSB:0] sreg;    // shift register data
 reg [6:0] bitcount;  // so max WIDTH = 127, but that should be enough...
 reg dflag;           // stores DONE flag output
  
+// 3 inputs: clk, load, bitcount
+// 3 outputs: dflag, bitcount, sreg
 always @(posedge clk) 
   begin 
     if (load) 
@@ -48,11 +50,11 @@ always @(posedge clk)
 	  end
     else 
 	  begin
-        sreg = {sreg[(MSB-1):0], 1'b0}; // shift left and 0-fill on right
-		bitcount = bitcount+1;  // this is the number of current bit output
+       sreg = {sreg[(MSB-1):0], 1'b0}; // shift left and 0-fill on right
+		 bitcount = bitcount+1;  // this is the number of current bit output
        if (bitcount == MSB) 
-		  dflag = 1'b1;  // MSB is last bit, set DONE flag high
-	   else
+		   dflag = 1'b1;  // MSB is last bit, set DONE flag high
+	    else
 	      dflag = 1'b0;  // not done yet so DONE remains low
 	  end
   end 

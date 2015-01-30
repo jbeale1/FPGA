@@ -10,10 +10,11 @@ module SerialCTL (
   output wire SS,      // SPI slave select (active low)
   output wire SCLK,    // SPI clock output
   output wire MOSI,     // SPI MOSI serial data output
-  output wire DoneFlag,  // 1-clk pulse indicating done
-  output wire [2:0] CurrentStateOut, // DEBUG
-  output wire Gclock, // gated clock from pulsegate
-  output wire PSClock // DEBUG show gated clock with 1 extra clock in front
+  output wire DoneFlag  // 1-clk pulse indicating done
+  //output wire [2:0] CurrentStateOut, // DEBUG
+  //output wire Gclock, // gated clock from pulsegate
+  //output wire PSClock, // DEBUG show gated clock with 1 extra clock in front
+  //output wire DoneSR  // DEBUG shift gate DONE flag
   );
   
 parameter BITS = 32;  // how many bits in one SPI output word
@@ -34,7 +35,7 @@ reg[2:0]  CurrentState;
 reg[2:0]  NextState;
 
 wire PGrun;     // run signal to pulsegate
-wire DoneSR; // done flag from pulsegate
+// wire DoneSR; // done flag from pulsegate
 // wire PSClock; // clock intput to shift reg
 
 // reg [MSB:0] SR; // shift register to rotate serial data out

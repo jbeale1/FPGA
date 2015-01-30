@@ -1,22 +1,11 @@
 `timescale 1ns / 100ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Engineer:   John Beale
 // 
-// Create Date:    13:56:01 01/28/2015 
-// Design Name: 
+// Create Date:    2:23 pm 30-JAN-2015
 // Module Name:    pulsegate 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
 // Description:  emit a specified number of pulses of clock
-// ...plus a 5 ns (?) "runt pulse" at the end
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
+//   ...plus a 5 ns (?) "runt pulse" at the end
 //
 //////////////////////////////////////////////////////////////////////////////////
 module pulsegate(
@@ -25,8 +14,6 @@ module pulsegate(
     input run,     // low=reset; high starts output pulse train
     output gclk,   // gated output
     output done    // high when pulse train complete
-//	 output [7:0] cnt, // DEBUG
-//	 output cselect     // DEBUG clock mux select line
     );
 
 parameter COUNT = 4;  // how many clock pulses to emit
@@ -38,6 +25,8 @@ reg [7:0] bitcnt;  // counter to track pulses
 wire csig[1:0];    // input to clock select multplexer
 wire cselect;         // clock mux select line
 
+// 4 inputs: clk, reset, run, bitcnt[]
+// 2 outputs: bitcnt[], doneflag
 always @(posedge clk)
 begin
  if (reset)
@@ -47,16 +36,19 @@ begin
   end
  else
   begin
-   if (^run)
+   if (run)  // 'run' high: clear done flag & bit counter
     begin 
      doneflag <= 0;  // clear doneflag on rising clk
      bitcnt <= 8'd0;
 	 end
-   else
+   else  // 'run' low:  count up, and signal end pulse
     begin
      bitcnt <= bitcnt+1;
   	  if (bitcnt == (COUNT-1))
  	    doneflag <= 1'b1;
+
+// NOTE! doneflag net has a latch, with missing 'else bitcnt ==' assignment
+
     end
   end
 end
