@@ -35,7 +35,7 @@ parameter WIDTH = 32;  // MSB of the shift reg (WIDTH+1 bits total)
 localparam MSB = WIDTH-1;  // bit numbering from 0 to MSB
 
 reg [MSB:0] sreg;    // shift register data
-reg [7:0] bitcount;  // so max WIDTH = 254, but that should be enough...
+reg [6:0] bitcount;  // so max WIDTH = 127, but that should be enough...
 reg dflag;           // stores DONE flag output
  
 always @(posedge clk) 
@@ -48,10 +48,12 @@ always @(posedge clk)
 	  end
     else 
 	  begin
-      sreg = {sreg[(MSB-1):0], 1'b0}; // shift left and 0-fill on right
+        sreg = {sreg[(MSB-1):0], 1'b0}; // shift left and 0-fill on right
 		bitcount = bitcount+1;  // this is the number of current bit output
-      if (bitcount == MSB) 
-		  dflag = 1'd1;  // set DONE flag to 1 (true)
+       if (bitcount == MSB) 
+		  dflag = 1'b1;  // MSB is last bit, set DONE flag high
+	   else
+	      dflag = 1'b0;  // not done yet so DONE remains low
 	  end
   end 
 

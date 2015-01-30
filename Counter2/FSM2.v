@@ -12,10 +12,11 @@ module SerialCTL (
   output wire MOSI,     // SPI MOSI serial data output
   output wire DoneFlag,  // 1-clk pulse indicating done
   output wire [2:0] CurrentStateOut, // DEBUG
-  output wire Gclock // gated clock from pulsegate
+  output wire Gclock, // gated clock from pulsegate
+  output wire PSClock // DEBUG show gated clock with 1 extra clock in front
   );
   
-parameter BITS = 4;  // how many bits in one SPI output word
+parameter BITS = 32;  // how many bits in one SPI output word
 localparam MSB = BITS-1;  // count bits from 0 to MSB
 
 // Names of each possible state of the FSM
@@ -33,21 +34,32 @@ reg[2:0]  CurrentState;
 reg[2:0]  NextState;
 
 wire PGrun;     // run signal to pulsegate
-// wire Gclock;  // gated clock signal
 wire DoneSR; // done flag from pulsegate
-// wire [2:0] CurrentStateOut; // DEBUG
+// wire PSClock; // clock intput to shift reg
+
+// reg [MSB:0] SR; // shift register to rotate serial data out
 
 // ==============================================
 // generate pulse train with fixed number COUNT of clocks
-pulsegate #(.COUNT(4)) pg1 (
+pulsegate #(.COUNT(BITS-1)) pg1 (
     .clk(Clock),     // clock input to be gated 
+	 .reset(Reset),   // reset line
     .run(PGrun),     // low=reset; high starts output pulse train
     .gclk(Gclock),   // gated output pulses
     .done(DoneSR)    // high when pulse train complete
     );
 
 // =============================================================
+// shift register with parallel load and serial output
+parshift #(.WIDTH(BITS)) ps1 (
+     .clk(PSClock),  // clock to shift reg (1 more clock than # bits)
+	  .load(PGrun),  // signal to parallel-load shift reg
+     .din(Data),     // parallel data bus
+	  .sout(MOSI),    // serial data output line
+	  .done(PSDone)   // shift reg done flag
+    );
 
+// =============================================================
 //reg  SSreg;  // store value of SS/ output
 //reg  [MSB:0] SRdata; // the data being shifted out
  
@@ -55,14 +67,16 @@ pulsegate #(.COUNT(4)) pg1 (
 //assign SCLK = Clock & ^SS;  // output clock is gated by SS/ (select line active low) 
 
 assign SS = (CurrentState == STATE_Initial);          // SS/ driven from register
-assign PGrun = (CurrentState == STATE_1);  // pulsgate RUN signal
+assign PGrun = (CurrentState == STATE_2);  // pulsegate RUN signal
 assign DoneFlag = ( CurrentState == STATE_4);  // last state before IDLE
 assign CurrentStateOut = CurrentState; // DEBUG
-
+assign PSClock = (Gclock | (PGrun & Clock));  // one more clock than BITS
+// assign SCLK = Gclock; // gated clock signal used as SPI Master output clock
+assign SCLK = PSClock; // gated clock signal used as SPI Master output clock
 // =============================================================
-// State Engine logic for changing states
-// inputs: CurrentState, Start, DoneSR, Reset
-// outputs: NextState
+// State Engine logic sequence for each state
+// 4 Inputs : CurrentState, Start, DoneSR, Reset
+// 1 Output : NextState
 
 always@( * ) begin  
  if(Reset == 1'b1)
@@ -71,20 +85,18 @@ always@( * ) begin
   NextState = CurrentState;
   case (CurrentState)
     STATE_Initial: begin  // idle state
-//	  SSreg = 1'b1;      // SS/ signal is inactive in idle state
 	  if (Start)  NextState = STATE_1;  // Start is the only way out of idle
 	end
 	STATE_1: begin    // we have received 'Start' : parallel load shift reg.
-                      // and signal output is starting
 	  NextState = STATE_2;
 	end
-	STATE_2: begin  // shift register is actively shifting data out
-	  if (DoneSR)  NextState = STATE_3;
+	STATE_2: begin  // signal output starts with b0
+	  NextState = STATE_3;
 	end
-	STATE_3: begin // SR is now done
-      NextState = STATE_4;
+	STATE_3: begin // // shift register is actively shifting data out
+      if (DoneSR) NextState = STATE_4;
 	end	
-	STATE_4: begin // final state, return to IDLE after this
+	STATE_4: begin // SR is now done, return to idle
 	  NextState = STATE_Initial;
 	end	
 	STATE_5: begin // unused
@@ -99,10 +111,13 @@ always@( * ) begin
   endcase
  end // if-else
 end // always
- // --------------------------------------------
- always@(posedge Clock) begin  // one tick forward of the state engine
-  if (Reset) CurrentState <= STATE_Initial;
-  else CurrentState <= NextState;
+// =============================================================
+// Machine to move state engine one tick forward on each clock
+ always@(posedge Clock) begin
+  if (Reset) 
+    CurrentState <= STATE_Initial;  // initial state upon reset
+  else 
+    CurrentState <= NextState;
 end
 // =============================================================
 

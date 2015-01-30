@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module pulsegate(
     input clk,     // clock input to be gated 
+	 input reset,   // zero out counter register
     input run,     // low=reset; high starts output pulse train
     output gclk,   // gated output
     output done    // high when pulse train complete
@@ -39,6 +40,13 @@ wire cselect;         // clock mux select line
 
 always @(posedge clk)
 begin
+ if (reset)
+  begin
+   bitcnt <= 0;
+	doneflag <= 1'b1;  // start out "done", until next 'run'
+  end
+ else
+  begin
    if (^run)
     begin 
      doneflag <= 0;  // clear doneflag on rising clk
@@ -50,6 +58,7 @@ begin
   	  if (bitcnt == (COUNT-1))
  	    doneflag <= 1'b1;
     end
+  end
 end
 
 assign cnt = bitcnt; // DEBUG

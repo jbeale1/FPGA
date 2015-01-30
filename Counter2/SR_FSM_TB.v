@@ -37,6 +37,7 @@ module SR_FSM_TB;
 	wire DoneFlag;
 	wire [2:0] State;
    wire Gclock;
+   wire PSClock;
 	
 	// Instantiate the Unit Under Test (UUT)
 	SerialCTL uut (
@@ -48,8 +49,9 @@ module SR_FSM_TB;
 		.SCLK(SCLK), 
 		.MOSI(MOSI), 
 		.DoneFlag(DoneFlag),
-		.CurrentStateOut(State), // DEBUG
-		.Gclock(Gclock)
+		.CurrentStateOut(State), // DEBUG out
+		.Gclock(Gclock),
+		.PSClock(PSClock) // DEBUG out
 	);
 
 	always
@@ -61,7 +63,7 @@ module SR_FSM_TB;
 		Clock = 0;
 		Reset = 0;
 		Start = 0;
-		Data = 0;
+		Data = 32'h6bc57a91;
 
 	   $display("starting simulation for Pulsegate circuit...");
 
@@ -73,11 +75,11 @@ module SR_FSM_TB;
 		
 		// Add stimulus here		  
     
-	   #119 Start = 1'b1;  // bring RUN to true
+	   #6 Start = 1'b1;  // bring RUN to true
 		$display($time, " << RUN is true >>");  
-		#132 Start= 1'b0;  // bring RUN low again
+		#6 Start= 1'b0;  // bring RUN low again
 		$display($time, " << RUN goes low >>"); 
-		#3950 Start = 1'b0;
+		#1000 Start = 1'b0;
 		$display($time, " << Simulation Complete >>");
       $stop;
 	 end
