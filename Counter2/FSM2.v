@@ -11,10 +11,6 @@ module SerialCTL (
   output wire SCLK,    // SPI clock output
   output wire MOSI,     // SPI MOSI serial data output
   output wire DoneFlag  // 1-clk pulse indicating done
-  //output wire [2:0] CurrentStateOut, // DEBUG
-  //output wire Gclock, // gated clock from pulsegate
-  //output wire PSClock, // DEBUG show gated clock with 1 extra clock in front
-  //output wire DoneSR  // DEBUG shift gate DONE flag
   );
   
 parameter BITS = 32;  // how many bits in one SPI output word
@@ -33,6 +29,8 @@ localparam STATE_Initial = 3'd0,
 // Registers holding value of current and future state		   
 reg[2:0]  CurrentState;
 reg[2:0]  NextState;
+
+// wire MOSIwire;  // DEBUG dummy
 
 wire PGrun;     // run signal to pulsegate
 // wire DoneSR; // done flag from pulsegate
@@ -74,6 +72,10 @@ assign CurrentStateOut = CurrentState; // DEBUG
 assign PSClock = (Gclock | (PGrun & Clock));  // one more clock than BITS
 // assign SCLK = Gclock; // gated clock signal used as SPI Master output clock
 assign SCLK = PSClock; // gated clock signal used as SPI Master output clock
+
+//assign MOSI = CurrentState[0]; // DEBUG: LSB of state
+// assign MOSI = 1'b1; // DEBUG: test
+
 // =============================================================
 // State Engine logic sequence for each state
 // 4 Inputs : CurrentState, Start, DoneSR, Reset
