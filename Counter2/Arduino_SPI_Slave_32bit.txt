@@ -1,0 +1,78 @@
+// Simple bit-banged software SPI slave (low speeds only)
+// reads in a single 32-bit word from FPGA output (10 kHz SPI clock)
+// J.Beale 31-JAN-2015
+
+#define ssPin   2   // SPI input Slave_Select
+#define clkPin  3  // SPI input Clock
+#define mosiPin 4 // SPI input MOSI
+
+#define ssmask  (1 << ssPin)
+#define clkmask  (1 << clkPin)
+#define mosimask  (1 << mosiPin)
+
+const int ledPin = 13;       // the pin that the LED is attached to
+
+#define SSIN (PIND & ssmask)   // read logic level on SS input
+#define CLKIN (PIND & clkmask)   // read logic level on SS input
+#define MOSI (PIND & mosimask)   // read logic level on SS input
+
+#define wait_negedge(SIG) do{} while (!SIG); do{} while (SIG) // wait for falling edge
+#define SPIBITS 32   // how many bits in SPI word  
+#define REFCONST (unsigned long) 100000000  // subtract off 10^8
+  
+void setup() {
+  pinMode(ssPin, INPUT);
+  pinMode(clkPin, INPUT);
+  pinMode(mosiPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  
+  Serial.begin(115200);
+  // delay(1000);
+  Serial.println("Slow SPI Slave test 0.1 31-JAN-2015 J.Beale");
+}
+
+unsigned char phase = 0;
+unsigned long loops = 0;
+unsigned long lastword = 0;
+unsigned long diff = 0;
+unsigned long diff_1;
+
+void loop() {
+  unsigned long inword;
+  unsigned char bitcnt;  // how many bits received
+
+  inword = 0x0000;
+  bitcnt = 0;
+  wait_negedge(SSIN);
+  
+  do {
+    wait_negedge(CLKIN);
+    if (MOSI != 0)
+      inword = (unsigned long) 0x00000001 | (inword << 1);
+    else
+      inword = (unsigned long) 0x00000000 | (inword << 1);
+
+    bitcnt++;
+  } while ((bitcnt < SPIBITS) && (~SSIN));
+  
+  diff = (inword - lastword);
+  diff_1 = diff - REFCONST;
+
+  if (diff != 0) {
+   Serial.print(millis());
+   Serial.print(",");
+//   Serial.print(bitcnt);
+//   Serial.print(",");
+   Serial.print(diff);
+   Serial.println();
+  }
+  lastword = inword;
+  
+  phase = !phase;
+  if (phase == 1) {
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+  
+}
