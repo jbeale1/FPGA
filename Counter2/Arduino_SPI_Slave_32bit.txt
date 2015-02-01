@@ -34,7 +34,7 @@ void setup() {
 unsigned char phase = 0;
 unsigned long loops = 0;
 unsigned long lastword = 0;
-unsigned long diff = 0;
+long diff = 0;
 unsigned long diff_1;
 
 void loop() {
@@ -47,6 +47,7 @@ void loop() {
   
   do {
     wait_negedge(CLKIN);
+//    noInterrupts();  // just to be safe
     if (MOSI != 0)
       inword = (unsigned long) 0x00000001 | (inword << 1);
     else
@@ -54,8 +55,14 @@ void loop() {
 
     bitcnt++;
   } while ((bitcnt < SPIBITS) && (~SSIN));
+//  interrupts();
   
-  diff = (inword - lastword);
+  inword = inword & 0x7fffffff;  // mask off high bit
+  if (inword < lastword)
+    diff = (inword + 0x80000000 - lastword);
+  else
+    diff = (inword - lastword);
+  
   diff_1 = diff - REFCONST;
 
   if (diff != 0) {
