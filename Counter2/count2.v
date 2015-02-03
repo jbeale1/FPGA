@@ -21,17 +21,18 @@
 module counter1
     ( input clk, 
 	   input reset,
-	   input ena1, 
-	   output wire [MSB:0] out );
+	//   input ena1, 
+	   output reg [MSB:0] out );
 		
 parameter WIDTH = 32;  // bits in the counter (not including clock LSB)
 localparam MSB = WIDTH-1;  // bit numbering from 0 to MSB	 
 	 
-reg [MSB:0] count;
-reg [MSB:0] lastcount; // value of 'count' from 1/2 clock cycle ago
+// reg [MSB:0] count;
+// reg [MSB:0] lastcount; // value of 'count' from 1/2 clock cycle ago
 
-reg clkreg;  // save the value of the clock signal as the LSB of counter
+// reg clkreg;  // save the value of the clock signal as the LSB of counter
 
+/*
 always @(posedge clk) 
   begin
     if (reset)
@@ -46,12 +47,22 @@ always @(posedge clk)
 		  count <= lastcount;
 		 end
   end
-  
+*/
+
+
+always @(posedge clk) 
+  begin
+//	   if (ena1)  
+        out <= out+1;    
+  end
+
+/*  
 always @(negedge clk)
   begin
     lastcount <= count;  // save the value from previous positive edge
   end
+  */
   
-assign out = count;   // output counter bits 
+// assign out = count;   // output counter bits 
 endmodule
 
