@@ -21,47 +21,31 @@
 module counter1
     ( input clk, 
 	   input reset,
-	//   input ena1, 
-	   output reg [MSB:0] out );
+      input s_in, 
+	   output reg [MSB:0] out,  // captured frozen count value
+      output outp  // output sync pulse "captured"
+		);
 		
 parameter WIDTH = 32;  // bits in the counter (not including clock LSB)
 localparam MSB = WIDTH-1;  // bit numbering from 0 to MSB	 
 	 
-// reg [MSB:0] count;
-// reg [MSB:0] lastcount; // value of 'count' from 1/2 clock cycle ago
+wire sample;  // signal to grab current value of clock register
+reg [MSB:0] count;  // the ever-incrementing register
 
-// reg clkreg;  // save the value of the clock signal as the LSB of counter
-
-/*
-always @(posedge clk) 
-  begin
-    if (reset)
-	   count <= 0;   // reset counter to zero
-    else 
-	   if (ena1)  
-	    begin
-        count <= count+1;    
-       end
-		else // not enabled; hold count
-		 begin
-		  count <= lastcount;
-		 end
-  end
-*/
-
+synch syn_A (.clk(clk), .in(s_in), .out(sample)  ); // synch input to clock
+synch syn_B (.clk(clk), .in(sample), .out(outp)  ); // delay "captured" signal out
 
 always @(posedge clk) 
-  begin
-//	   if (ena1)  
-        out <= out+1;    
-  end
+ begin
+  count <= count+1; 
+//  out <= count;  
+ end
 
-/*  
 always @(negedge clk)
-  begin
-    lastcount <= count;  // save the value from previous positive edge
-  end
-  */
+ begin
+  if (sample)
+    out <= count;
+ end
   
 // assign out = count;   // output counter bits 
 endmodule

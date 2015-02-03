@@ -44,21 +44,47 @@ always @(posedge clk)
   begin 
     if (load) 
 	  begin
-	   dflag = 1'd0;      // reset DONE flag to 0 (false)
-	   bitcount = 7'd0;  // set bit counter at b0
-      sreg = din;   // b0 is output immediately upon (load & posedge clk)
+	   dflag <= 1'd0;      // reset DONE flag to 0 (false)
+	   bitcount <= 7'd0;  // set bit counter at b0
+      sreg <= din;   // b0 is output immediately upon (load & posedge clk)
 	  end
     else 
 	  begin
-       sreg = {sreg[(MSB-1):0], 1'b0}; // shift left and 0-fill on right
-		 bitcount = bitcount+1;  // this is the number of current bit output
+       sreg <= {sreg[(MSB-1):0], 1'b0}; // shift left and 0-fill on right
+		 bitcount <= bitcount+1;  // this is the number of current bit output
        if (bitcount == MSB) 
-		   dflag = 1'b1;  // MSB is last bit, set DONE flag high
+		   dflag <= 1'b1;  // MSB is last bit, set DONE flag high
 	    else
-	      dflag = 1'b0;  // not done yet so DONE remains low
+	      dflag <= 1'b0;  // not done yet so DONE remains low
 	  end
   end 
 
 assign sout = sreg[MSB];    // shift register data output
 assign done = dflag;        // shift register DONE flag output
 endmodule 
+
+
+/*
+// Following is the Verilog code for an 8-bit shift-left register 
+// with a positive-edge clock, synchronous parallel load, serial in, and serial out.
+
+module shift (C, SLOAD, SI, D, SO); 
+input  C,SI,SLOAD; 
+input [7:0] D; 
+output SO; 
+reg [7:0] tmp; 
+ 
+  always @(posedge C) 
+  begin 
+    if (SLOAD) 
+      tmp = D; 
+    else 
+      begin 
+        tmp = {tmp[6:0], SI}; 
+      end 
+  end 
+  
+assign SO  = tmp[7]; 
+
+endmodule 
+*/

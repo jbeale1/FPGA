@@ -32,6 +32,7 @@ module top
 	  output serdone, // SPI output done
 //	  output pulseN,  // DEBUG output start-SPI-xmit pulse
 	  output p1kout,     // 1k divider pulse out
+	  output clk10Hz, // 10 Hz signal out
 	  output [7:0] LEDS  // external LEDs
     );
 
@@ -70,14 +71,17 @@ assign const1w = const1; // DEBUG
 // BUFGCE U1 (.O(clkg), .CE(ena_sync), .I(clk)); 			
 
 wire [9:0] word1k;  // output from divide-by-1k counter
+wire [9:0] word10Hz;  // output from divide-by-1k counter
 wire p1k;  // 1k div pulse output
 wire truej;
-wire p1kout;
+// wire p1kout;
 wire clkg180; // 250 MHz clock at PHASE = 180 degrees
 wire clk10kHz;
+// wire clk10Hz; // 10 Hz signal out
 
 assign truej = 1'b1;  // DEBUG: fixed logic high
 assign p1kout = word1k[9];
+assign clk10Hz = word10Hz[9];
 
 BUFG clk10kHz_buf
    (.O   (clk10kHz),
@@ -114,6 +118,14 @@ bincount1k cnt1k_A (
   .thresh0(),  // 10 kHz
   .q(word1k) );   // 10-bit up counter @ 10 MHz, MSB is 10 kHz, near 50% duty
 
+// =======================================
+// Another divide-by-1000 10 Hz clock generator
+bincount1k cnt1k_B (
+  .clk(clk10kHz),  // 10 MHz
+  .ce(truej),
+  .thresh0(),  // 10 Hz
+  .q(word10Hz) );   // 10-bit up counter @ 10 MHz, MSB is 10 kHz, near 50% duty
+
 
 //cdiv2 cdiv2_A (
 //         .CIN(clk10), // 10 MHz clock signal from clkgen PLL
@@ -125,11 +137,11 @@ bincount1k cnt1k_A (
 			
 // ================================================================
 
-synch syn_A (     // synchronize enable input with (fast clock)
-    .clk(clkg),
-    .in(ena_raw),
-    .out(ena_sync)
-    );
+//synch syn_A (     // synchronize enable input with (fast clock)
+//    .clk(clkg),
+//    .in(ena_raw),
+//    .out(ena_sync)
+//    );
 
 
 // take 1pps with small duty cycle and get 0.5 Hz with 50% duty cycle
@@ -151,9 +163,12 @@ level2pulse l2p_A (  // note that 'ena1' must be low through one full 'clktap' c
 counter1 cnt_inst (
      .clk(clk10),  // fast clock
 	  .reset(SW[1]), // reset signal
-//	  .ena1(ena1), // external enable input
-	  .out(creg)   // counter register
+	  .s_in(ena_raw), // external async enable input
+	  .out(creg),   // counter register
+	  .outp(ena_sync) // output "captured" pulse
 	 );	 
+	 
+ 
 // ===========================================================
 
 //bincount #(.WIDTH(12), .DIV(500)) clk100k (
@@ -208,13 +223,17 @@ pulsegate #(.COUNT(8)) pg1 (
     );	 
 */
 	 
-always @ (posedge clk10) 
+always @ (posedge serdone) 
   begin
     outword <= creg;
   end
 
+/*
 assign LEDS[7] = ena_raw;
 assign LEDS[6] = ena1;
 assign LEDS[5:0] = outword[MSB -:6];   // show output of counter on 7 LEDs	 
-
+*/
+assign LEDS[7] = outword[11];
+assign LEDS[6] = outword[10];
+assign LEDS[5:0] = 6'b0;
 endmodule

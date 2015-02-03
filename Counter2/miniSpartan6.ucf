@@ -20,7 +20,7 @@ NET "serdone" LOC="D8";   // PORTA2
 NET "SS"  LOC="C10";      // PORTA7
 NET "serclk"  LOC="F9";   // PORTA9
 NET "serbits"  LOC="D11"; // PORTA11
-# NET "pulseN"  LOC="C6"; // PORTD1
+NET "clk10Hz"  LOC="C6"; // PORTD1
 NET "p1kout"    LOC="C5"; // PORTD3
 
 # DIP Switches
